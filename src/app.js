@@ -9,9 +9,7 @@ const sanitizeInputs = require('./middlewares/inputSanitizer');
 const { ipBlacklist } = require('./middlewares/ipBlacklist');
 
 
-// ... other middleware and routes
-
-
+// Import routes
 const publicRoutes = require('./routes/publicRoutes');
 const submitRoutes = require('./routes/submitRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -19,24 +17,21 @@ const contactRoutes = require('./routes/contactRoutes');
 const app = express();
 
 // Setup security headers
-
-// Setup CSRF protection globally for POST, PUT, DELETE
 setupCsrf(app);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(ipBlacklist); // Apply to all routes
 app.use(sanitizeInputs);  // sanitize before CSRF
 
-
-setupCsrf(app);           // CSRF protection middleware
+// CSRF protection middleware
+setupCsrf(app);
 app.use(cookieParser());
 app.use(csrf({ cookie: true }));
 
 app.use('/api/form', (req, res) => {
-    res.cookie('XSRF-TOKEN', req.csrfToken()); // Send token as cookie
-    res.json({ csrfToken: req.csrfToken() });  // Optional
+    res.cookie('XSRF-TOKEN', req.csrfToken());
+    res.json({ csrfToken: req.csrfToken() });
 });
-// your routes here
 
 // Routes
 app.use('/api', publicRoutes);
